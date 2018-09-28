@@ -885,6 +885,13 @@ class _MockObjectFactory(MockObject):
         super(_MockObjectFactory, self)._Verify()
 
 
+def _getargspec(*args, **kwargs):
+    """A getargspec implementation compatible with Python 3.7."""
+    if hasattr(inspect, 'getfullargspec'):
+        return inspect.getfullargspec(*args, **kwargs)
+    return inspect.getargspec(*args, **kwargs)
+
+
 class MethodSignatureChecker(object):
     """Ensures that methods are called correctly."""
 
@@ -906,7 +913,7 @@ class MethodSignatureChecker(object):
                         can't be inspected.
         """
         try:
-            self._args, varargs, varkw, defaults = inspect.getargspec(method)
+            self._args, varargs, varkw, defaults = _getargspec(method)
         except TypeError:
             raise ValueError('Could not get argument specification for %r'
                              % (method,))
